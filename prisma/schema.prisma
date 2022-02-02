@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model anime {
+  uid         String   @id
+  title       String?   
+  synopsis    String?
+  genre       String?
+  aired       String?
+  episodes    String?
+  members     String?
+  popularity  String?
+  ranked      String?
+  score       String?
+  img_url     String?
+  link        String?
+}
