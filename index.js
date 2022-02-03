@@ -23,23 +23,37 @@ app.listen(port, () => {
 //   const currentPage = page || 0;
 // });
 
-app.get("/anime-list/:page/:limit", async (req, res) => {
-  const page = parseInt(req.params.page) || 1;
-  const limit = parseInt(req.params.limit) || 2;
+function paginate(data, limit, startIndex) {
+  return data.slice((startIndex - 1) * limit, startIndex * limit);
+}
+
+app.get("/anime-list", async (req, res) => {
+  const query = req.query;
+  const page = parseInt(query.page) || 1;
+  const limit = parseInt(query.limit) || 2;
   const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const result = {};
+  const currentPage = page || 0;
   try {
-    const result = await prisma.anime.findMany({
-      skip: page,
-      take: startIndex,
-      where: {
-        NOT: {
-          ranked: null,
-        },
-      },
-      orderBy: {
-        ranked: "asc",
-      },
-    });
+    const data = await prisma.anime.findMany();
+    result.currentPage = page;
+    result.perPage = limit;
+    result.totalPage = Math.ceil(data.length / limit);
+    result.pagesUrl = {
+      next: `http://localhost:${port}/anime-list?page=${
+        page + 1
+      }&limit=${limit}`,
+
+      prev: `http://localhost:${port}/anime-list?page=${
+        page - 1 < 0 ? 1 : page - 1
+      }&limit=${limit}`,
+    };
+    result.from = startIndex + 1;
+    result.to = endIndex + 1;
+    result.data = Object.entries(data)
+      .slice(startIndex, endIndex)
+      .map((entry) => entry[1]);
 
     return res.status(200).json(result);
   } catch (err) {

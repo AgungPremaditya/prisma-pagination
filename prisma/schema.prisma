@@ -11,7 +11,7 @@ datasource db {
 }
 
 model anime {
-  uid         String   @id
+  uid         Int     @id
   title       String?   
   synopsis    String?
   genre       String?
@@ -19,7 +19,7 @@ model anime {
   episodes    String?
   members     String?
   popularity  String?
-  ranked      String?
+  ranked      Int?
   score       String?
   img_url     String?
   link        String?
